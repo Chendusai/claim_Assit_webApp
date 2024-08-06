@@ -5,12 +5,12 @@ import lightgbm as lgb
 import streamlit as st
 
 
-filename = "claim_model.pkl"
+filename = "claimAssit_cts.pkl"
 loaded_model = pickle.load(open(filename, 'rb'))
-jobtitle_le = pickle.load(open("le_job_title.pkl", 'rb'))
-hereditary_disease_le = pickle.load(open("le_hereditary_diseases.pkl", 'rb'))
-city_le = pickle.load(open("le_city.pkl", 'rb'))
-scaler = pickle.load(open("scaler.pkl", 'rb'))
+jobtitle_le = pickle.load(open("le_job_title_Assist.pkl", 'rb'))
+hereditary_disease_le = pickle.load(open("le_hereditary_diseases_Assist.pkl", 'rb'))
+city_le = pickle.load(open("le_city_Assist.pkl", 'rb'))
+scaler = pickle.load(open("scalerAssit.pkl", 'rb'))
 
 def claim_prediction(input_data):
     # Convert input data into a DataFrame for processing
