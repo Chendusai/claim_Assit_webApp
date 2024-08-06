@@ -43,14 +43,15 @@ def claim_prediction(input_data):
 
     # Interpretation of the result
     if prediction[0] > 0.5 :
-        return 'The claim is likely to be rejected.'
+        return 'The claim is likely to be Approved.'
     else:
-        return 'The claim is likely to be approved.'
+        return 'The claim is likely to be Rejected.'
 
 def main():
     st.title('ClaimAssist Web Page')
 
     # Input fields
+    name = st.text_input('Enter Name')
     age = st.text_input('Enter Age')
     sex = st.text_input('Enter Sex')
     weight = st.text_input('Enter Weight (in kg)')
