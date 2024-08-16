@@ -8,9 +8,6 @@ import streamlit as st
 st.markdown(
 """
     <style>
-    .main {
-        background-color: #f5f5f5; /* Light grey background */
-    }
     .approved {
         color: green;
         font-size: 24px;
