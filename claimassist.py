@@ -4,7 +4,7 @@ import pickle
 import lightgbm as lgb
 import streamlit as st
 
-# Custom CSS for background and text styling
+# Custom CSS for professional look with a box style
 st.markdown(
     """
     <style>
@@ -12,7 +12,7 @@ st.markdown(
         color: green;
         font-size: 20px;
         font-family: 'Arial', sans-serif;
-        background-color: #e6ffe6;  /* Light green background */
+        background-color: #e6ffe6;
         padding: 10px;
         border-radius: 5px;
         border: 1px solid green;
@@ -21,17 +21,26 @@ st.markdown(
         color: red;
         font-size: 20px;
         font-family: 'Arial', sans-serif;
-        background-color: #ffe6e6;  /* Light red background */
+        background-color: #ffe6e6;
         padding: 10px;
         border-radius: 5px;
         border: 1px solid red;
+    }
+    .error {
+        color: orange;
+        font-size: 20px;
+        font-family: 'Arial', sans-serif;
+        background-color: #fff3cd;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid orange;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-
+# Load model and encoders
 filename = "claimAssit_cts.pkl"
 loaded_model = pickle.load(open(filename, 'rb'))
 jobtitle_le = pickle.load(open("le_job_title_Assist.pkl", 'rb'))
@@ -39,13 +48,17 @@ hereditary_disease_le = pickle.load(open("le_hereditary_diseases_Assist.pkl", 'r
 city_le = pickle.load(open("le_city_Assist.pkl", 'rb'))
 scaler = pickle.load(open("scalerAssit.pkl", 'rb'))
 
+# Sample list of claim IDs (this can be replaced by actual database or stored data)
+existing_claim_ids = []  # Replace with real data
+
 def claim_prediction(input_data):
     input_df = pd.DataFrame([input_data], columns=['age', 'sex', 'weight', 'bmi', 'hereditary_diseases', 'no_of_dependents', 'smoker', 'city', 'bloodpressure', 'diabetes', 'regular_ex', 'job_title', 'claim'])
 
-    input_df['sex'].replace(['FEMALE','MALE','Female','Male','female', 'male'], [0,1,0,1,0, 1], inplace=True)
-    input_df['smoker'].replace(['YES','NO','no', 'yes'], [1,0,0,1], inplace=True)
+    # Encode categorical data
+    input_df['sex'].replace(['female', 'male'], [0, 1], inplace=True)
+    input_df['smoker'].replace(['no', 'yes'], [0, 1], inplace=True)
 
-
+    # Safe label transformation
     def safe_label_transform(le, column):
         known_labels = le.classes_
         input_df[column] = input_df[column].apply(lambda x: x if x in known_labels else 'Unknown')
@@ -84,11 +97,17 @@ def main():
 
     outcome = ''
     if st.button('Claim Prediction'):
-        prediction = claim_prediction([age, sex, weight, bmi, hereditary_diseases, no_of_dependents, smoker, city, bloodpressure, diabetes, regular_ex, job_title, claim])
-        if prediction > 0.5:
-            outcome = f'<div class="approved">Congratulations {name}, your claim is approved! You will receive your payment shortly!</div>'
+        # Check if the claim ID already exists
+        if claim_id in existing_claim_ids:
+            outcome = f'<div class="error">Claim ID "{claim_id}" already exists. Please enter a unique Claim ID.</div>'
         else:
-            outcome = f'<div class="rejected">Dear {name} your claim has been reviewed and unfortunately, it has been rejected.</div>'
+            existing_claim_ids.append(claim_id)
+            prediction = claim_prediction([age, sex, weight, bmi, hereditary_diseases, no_of_dependents, smoker, city, bloodpressure, diabetes, regular_ex, job_title, claim])
+            if prediction > 0.5:
+                outcome = f'<div class="approved">Congratulations {name}, your claim is approved! You will receive your payment shortly!</div>'
+            else:
+                outcome = f'<div class="rejected">Sorry {name}, your claim has been rejected. Please contact support for further assistance.</div>'
+        
         st.markdown(outcome, unsafe_allow_html=True)
 
 if __name__ == '__main__':
