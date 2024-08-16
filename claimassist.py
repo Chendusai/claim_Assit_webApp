@@ -56,7 +56,9 @@ def claim_prediction(input_data):
 
     # Encode categorical data
     input_df['sex'].replace(['female', 'male'], [0, 1], inplace=True)
-    input_df['smoker'].replace(['no', 'yes'], [0, 1], inplace=True)
+    input_df['smoker'].replace([0, 1], inplace=True)
+    input_df['diabetes'].replace([0, 1], inplace=True)
+    input_df['regular_ex'].replace([0, 1], inplace=True)
 
     # Safe label transformation
     def safe_label_transform(le, column):
@@ -82,21 +84,26 @@ def main():
     claim_id = st.text_input('Enter Claim ID')
     name = st.text_input('Enter Name')
     age = st.text_input('Enter Age')
-    sex = st.text_input('Enter Sex')
+    sex = st.selectbox('Select Sex', ('female', 'male'))
     weight = st.text_input('Enter Weight (in kg)')
     bmi = st.text_input('Enter Body Mass Index (BMI)')
     hereditary_diseases = st.text_input('List any hereditary diseases')
     no_of_dependents = st.text_input('No of Dependents')
-    smoker = st.text_input('Do you smoke? (yes/no)')
+    smoker = st.selectbox('Do you smoke?', ('no', 'yes'))  # Dropdown for smoker
     city = st.text_input('Enter City')
     bloodpressure = st.text_input('Blood Pressure')
-    diabetes = st.text_input('Do you have diabetes? (yes/no)')
-    regular_ex = st.text_input('Do you engage in regular exercise? (yes/no)')
+    diabetes = st.selectbox('Do you have diabetes?', ('no', 'yes'))  # Dropdown for diabetes
+    regular_ex = st.selectbox('Do you engage in regular exercise?', ('no', 'yes'))  # Dropdown for regular exercise
     job_title = st.text_input('Enter Job Title')
     claim = st.text_input('Enter Claim Amount')
 
     outcome = ''
     if st.button('Claim Prediction'):
+        # Convert yes/no inputs to 1/0
+        smoker = 1 if smoker == 'yes' else 0
+        diabetes = 1 if diabetes == 'yes' else 0
+        regular_ex = 1 if regular_ex == 'yes' else 0
+        
         # Check if the claim ID already exists
         if claim_id in existing_claim_ids:
             outcome = f'<div class="error">Claim ID "{claim_id}" already exists. Please enter a unique Claim ID.</div>'
