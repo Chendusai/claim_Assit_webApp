@@ -89,6 +89,7 @@ def main():
             outcome = f'<div class="approved">Congratulations {name}, your claim is approved! You will receive your payment shortly!</div>'
         else:
             outcome = f'<div class="rejected">Dear {name} your claim has been reviewed and unfortunately, it has been rejected.</div>'
+        st.markdown(outcome, unsafe_allow_html=True)
 
 if __name__ == '__main__':
     main()
