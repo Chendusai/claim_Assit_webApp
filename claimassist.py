@@ -6,22 +6,31 @@ import streamlit as st
 
 # Custom CSS for background and text styling
 st.markdown(
-"""
+    """
     <style>
     .approved {
         color: green;
-        font-size: 24px;
-        font-weight: bold;
+        font-size: 20px;
+        font-family: 'Arial', sans-serif;
+        background-color: #e6ffe6;  /* Light green background */
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid green;
     }
     .rejected {
         color: red;
-        font-size: 24px;
-        font-weight: bold;
+        font-size: 20px;
+        font-family: 'Arial', sans-serif;
+        background-color: #ffe6e6;  /* Light red background */
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid red;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 filename = "claimAssit_cts.pkl"
 loaded_model = pickle.load(open(filename, 'rb'))
@@ -33,8 +42,9 @@ scaler = pickle.load(open("scalerAssit.pkl", 'rb'))
 def claim_prediction(input_data):
     input_df = pd.DataFrame([input_data], columns=['age', 'sex', 'weight', 'bmi', 'hereditary_diseases', 'no_of_dependents', 'smoker', 'city', 'bloodpressure', 'diabetes', 'regular_ex', 'job_title', 'claim'])
 
-    input_df['sex'].replace(['female', 'male'], [0, 1], inplace=True)
-    input_df['smoker'].replace(['no', 'yes'], [0, 1], inplace=True)
+    input_df['sex'].replace(['FEMALE','MALE','Female','Male','female', 'male'], [0,1,0,1,0, 1], inplace=True)
+    input_df['smoker'].replace(['YES','NO','no', 'yes'], [1,0,0,1], inplace=True)
+
 
     def safe_label_transform(le, column):
         known_labels = le.classes_
@@ -56,8 +66,8 @@ def main():
     st.title('ClaimAssist Web Page')
 
     # Input fields
-    st.text_input('Enter Claim ID')
-    st.text_input('Enter Name')
+    claim_id = st.text_input('Enter Claim ID')
+    name = st.text_input('Enter Name')
     age = st.text_input('Enter Age')
     sex = st.text_input('Enter Sex')
     weight = st.text_input('Enter Weight (in kg)')
@@ -76,10 +86,9 @@ def main():
     if st.button('Claim Prediction'):
         prediction = claim_prediction([age, sex, weight, bmi, hereditary_diseases, no_of_dependents, smoker, city, bloodpressure, diabetes, regular_ex, job_title, claim])
         if prediction > 0.5:
-            outcome = '<div class="approved">The claim is approved. You will receive your payment shortly!</div>'
+            outcome = f'<div class="approved">Congratulations {name}, your claim is approved! You will receive your payment shortly!</div>'
         else:
-            outcome = '<div class="rejected">The claim is rejected. Please contact support for further details.</div>'
-        st.markdown(outcome, unsafe_allow_html=True)
+            outcome = f'<div class="rejected">Dear {name} your claim has been reviewed and unfortunately, it has been rejected.</div>'
 
 if __name__ == '__main__':
     main()
