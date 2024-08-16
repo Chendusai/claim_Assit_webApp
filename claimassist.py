@@ -6,7 +6,7 @@ import streamlit as st
 
 # Custom CSS for background and text styling
 st.markdown(
-
+"""
     <style>
     .main {
         background-color: #f5f5f5; /* Light grey background */
@@ -22,7 +22,7 @@ st.markdown(
         font-weight: bold;
     }
     </style>
-    ,
+    """,
     unsafe_allow_html=True
 )
 
