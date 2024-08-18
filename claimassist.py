@@ -113,7 +113,7 @@ def main():
             if prediction > 0.5:
                 outcome = f'<div class="approved">Congratulations {name}, your claim is approved! You will receive your payment shortly!</div>'
             else:
-                outcome = f'<div class="rejected">Sorry {name}, your claim has been rejected. Please contact support for further assistance.</div>'
+                outcome = f'<div class="rejected">Sorry {name} your claim has been reviewed and unfortunately, it has been rejected.</div>'
         
         st.markdown(outcome, unsafe_allow_html=True)
 
